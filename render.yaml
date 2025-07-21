@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: netflix-recommender-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    port: 5000
+    files:
+      - requirements.txt
+      - app.py
