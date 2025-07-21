@@ -8,7 +8,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 app = Flask(__name__)
 
 # ✅ Allow only your deployed frontend
-CORS(app, origins=["https://dsncommenderfrontend.vercel.app"])
+CORS(app, supports_credentials=True)  # Allow all origins for debug
+# CORS(app, origins=["https://dsncommenderfrontend.vercel.app"])  # Uncomment for production
 # CORS(app)  # Uncomment if you want to allow all origins (not recommended for production)
 # ─────────────────────────────────────
 # 🔁 Load and process data only on demand
@@ -86,4 +87,3 @@ def ping():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-    
