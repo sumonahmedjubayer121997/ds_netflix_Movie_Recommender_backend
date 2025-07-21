@@ -7,12 +7,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
 
-# ✅ Allow only your deployed frontend
-CORS(app, supports_credentials=True)  # Allow all origins for debug
-# CORS(app, origins=["https://dsncommenderfrontend.vercel.app"])  # Uncomment for production
-# CORS(app)  # Uncomment if you want to allow all origins (not recommended for production)
-# ─────────────────────────────────────
-# 🔁 Load and process data only on demand
+# ✅ TEMPORARY: Allow ALL origins for debug (switch to Vercel origin later)
+CORS(app)
+
 # ─────────────────────────────────────
 def load_data():
     try:
@@ -33,9 +30,6 @@ def build_model(df):
     indices = pd.Series(df.index, index=df['title_clean'])
     return cosine_sim, indices
 
-# ─────────────────────────────────────
-# 🎯 Recommender Function
-# ─────────────────────────────────────
 def recommend(title):
     df = load_data()
     cosine_sim, indices = build_model(df)
@@ -51,15 +45,9 @@ def recommend(title):
     return df['title'].iloc[movie_indices].tolist()
 
 # ─────────────────────────────────────
-# 📡 API Routes
-# ─────────────────────────────────────
 @app.route("/", methods=["GET"])
 def index():
     return "✅ Netflix Movie Recommendation API is running!"
-
-@app.route("/favicon.ico")
-def favicon():
-    return '', 204
 
 @app.route("/recommend", methods=["POST"])
 def get_recommendations():
@@ -74,7 +62,7 @@ def get_recommendations():
         return jsonify({"recommendations": results})
 
     except Exception as e:
-        print("🔥 Internal server error:", e)
+        print("🔥 Internal Server Error:", e)
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
 @app.route("/ping", methods=["GET"])
@@ -82,8 +70,6 @@ def ping():
     return "pong", 200
 
 # ─────────────────────────────────────
-# 🚀 Render compatibility
-# ────────────────────────────────────
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
